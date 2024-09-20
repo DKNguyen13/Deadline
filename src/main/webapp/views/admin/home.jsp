@@ -9,7 +9,9 @@
 </head>
 <body>
     <h1> Hello admin </h1>
-
+    <button onclick="window.location.href='<c:url value="/logout" />'">
+        Logout
+    </button>
     </form>
 </body>
 </html>
