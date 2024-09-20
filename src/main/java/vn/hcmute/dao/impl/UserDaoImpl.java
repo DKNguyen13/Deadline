@@ -64,17 +64,19 @@ public class UserDaoImpl extends DBConnection implements IUserDao {
 
     @Override
     public void Insert(UserModel user) throws SQLException, ClassNotFoundException {
-        /*
-        String sqlQuery = "Insert Into Users(id, username, password,fullname,images) values (?,?,?,?,?)";
-            conn = super.getDatabaseConnection();
-            ps = conn.prepareStatement(sqlQuery);
-            ps.setInt(1,user.getId());
-            ps.setString(2,user.getUsername());
-            ps.setString(3,user.getPassword());
-            ps.setString(4, user.getFullname());
-            ps.setString(5,user.getImages());
+        String insertQuery = "INSERT INTO login(username, password, email, fullname, phone, roleid) VALUES (?, ?, ?, ?, ?, ?)";
+
+        conn = super.getDatabaseConnection();
+
+        try (PreparedStatement ps = conn.prepareStatement(insertQuery)) {
+            ps.setString(1, user.getUserName());
+            ps.setString(2, user.getPassWord());
+            ps.setString(3, user.getEmail());
+            ps.setString(4, user.getFullName());
+            ps.setString(5, user.getPhone());
+            ps.setInt(6, user.getRoleid());
             ps.executeUpdate();
-            */
+        }
 
     }
 
@@ -85,6 +87,44 @@ public class UserDaoImpl extends DBConnection implements IUserDao {
             conn = new DBConnection().getDatabaseConnection();
             ps = conn.prepareStatement(sql);
             ps.setString(1, username);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                UserModel user = new UserModel();
+                user.setId(rs.getInt("id"));
+                user.setEmail(rs.getString("email"));
+                user.setUserName(rs.getString("username"));
+                user.setFullName(rs.getString("fullname"));
+                user.setPassWord(rs.getString("password"));
+                user.setAvatar(rs.getString("avatar"));
+                user.setRoleid(Integer.parseInt(rs.getString("roleid")));
+                user.setPhone(rs.getString("phone"));
+                user.setCreatedDate(rs.getDate("createDate"));
+                return user; }
+        } catch (Exception e) {e.printStackTrace(); }
+        return null;
+    }
+
+    @Override
+    public void updatePassword(String username, String newPassword) throws SQLException {
+        String sql = "UPDATE login SET password = ? WHERE username = ?";
+        try (Connection conn = new DBConnection().getDatabaseConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, newPassword);
+            stmt.setString(2, username);
+            stmt.executeUpdate();
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public UserModel FindByEmail(String email) {
+
+        String sql = "SELECT * FROM login WHERE email = ? ";
+        try {
+            conn = new DBConnection().getDatabaseConnection();
+            ps = conn.prepareStatement(sql);
+            ps.setString(1, email);
             rs = ps.executeQuery();
             while (rs.next()) {
                 UserModel user = new UserModel();
