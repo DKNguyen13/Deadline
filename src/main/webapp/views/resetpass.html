@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:c="http://www.w3.org/1999/XSL/Transform">
+<head>
+  <meta charset="UTF-8">
+  <title>Reset Password</title>
+  <style>
+    .alert {
+        background-color: #f44336;
+        color: white;
+        padding: 15px;
+        margin-bottom: 20px;
+        border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+<div class="main">
+  <h2>Forgot Password</h2>
+
+  <c:if test="${not empty message}">
+    <div class="alert">${message}</div>
+  </c:if>
+
+  <form action="/forgot-password" method="post">
+    <label for="username">Username or Email:</label>
+    <input type="text" id="username" name="username" required>
+    <button type="submit">Reset Password</button>
+  </form>
+</div>
+</body>
+</html>
