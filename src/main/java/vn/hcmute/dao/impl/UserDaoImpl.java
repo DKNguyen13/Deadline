@@ -4,10 +4,8 @@ import vn.hcmute.configs.DBConnection;
 import vn.hcmute.dao.IUserDao;
 import vn.hcmute.models.UserModel;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,15 +62,30 @@ public class UserDaoImpl extends DBConnection implements IUserDao {
 
     @Override
     public void Insert(UserModel user) throws SQLException, ClassNotFoundException {
+
+        String insertQuery = "INSERT INTO login(username, password, email, fullname, phone, roleid) VALUES (?, ?, ?, ?, ?, ?)";
+
+        conn = super.getDatabaseConnection();
+
+        try (PreparedStatement ps = conn.prepareStatement(insertQuery)) {
+            ps.setString(1, user.getUserName());
+            ps.setString(2, user.getPassWord());
+            ps.setString(3, user.getEmail());
+            ps.setString(4, user.getFullName());
+            ps.setString(5, user.getPhone());
+            ps.setInt(6, user.getRoleid());
+            ps.executeUpdate();
+        }
         /*
-        String sqlQuery = "Insert Into Users(id, username, password,fullname,images) values (?,?,?,?,?)";
+        String sqlQuery = "Insert Into login(username, password,email,fullname,phone,roleid) values (?,?,?,?,?,?)";
             conn = super.getDatabaseConnection();
             ps = conn.prepareStatement(sqlQuery);
-            ps.setInt(1,user.getId());
-            ps.setString(2,user.getUsername());
-            ps.setString(3,user.getPassword());
-            ps.setString(4, user.getFullname());
-            ps.setString(5,user.getImages());
+            ps.setString(1, user.getUserName());
+            ps.setString(2, user.getPassWord());
+            ps.setString(3, user.getEmail());  // Đảm bảo sử dụng đúng getter
+            ps.setString(4, user.getFullName());
+            ps.setString(5, user.getPhone());
+            ps.setInt(6, user.getRoleid());  // Giả sử roleid cũng cần thiết
             ps.executeUpdate();
             */
 
@@ -104,10 +117,10 @@ public class UserDaoImpl extends DBConnection implements IUserDao {
 
     public static void main(String[] args) throws ClassNotFoundException, SQLException {
         UserDaoImpl userDao = new UserDaoImpl();
-        userDao.FindByUsername("dkn");
         List<UserModel> list = userDao.FindAll();
         for (UserModel x : list){
             System.out.println(x.toString());
         }
     }
+
 }
